@@ -2,7 +2,7 @@ int rad = 30;        // Width of the shape
 float xpos, ypos;    // Starting position of shape    
 
 float xspeed = 0;  // Speed of the shape
-float yyspeed = 3;  // Speed of the shape
+float yyyspeed = 3;  // Speed of the shape
 
 float yacceleration = 0; // Y Acceleration
 float xacceleration = 0; // X Acceleration
