@@ -9,7 +9,7 @@ float xacceleration = 0; // X Acceleration
 
 float xdirection = 1;  // Left or Right
 float ydirection = 1;  // Top to Bottom
-PImage img1;
+PImage img11;
 String userName = "";
 
 /*** Game State Boolean Variables ****/
