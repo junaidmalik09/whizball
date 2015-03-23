@@ -180,8 +180,9 @@ void platforms()
   {  
     int counter = 0;
     
-    // platforms that are on the ground
-    while ( counter < 4 )
+    //new platforms are created 7 times. 
+    //However, not all of them are saved, if they are on top of each other
+    while ( counter < 7 )
     {
       accepted = false; // true if plaforms are not on top of each other
       placeX = random(0, 700); 
@@ -191,16 +192,22 @@ void platforms()
    
          for ( int j = 0; j < counter; ++j )
          {
-            accepted = false;
+            accepted = true;
             
-            // test if new platform is on top of previous ones
-           if ( placeX2 <= ArrPlaceX[j] || placeX >= ArrPlaceX2[j] )
-           {
-             accepted = true;
+            // check if the new platform is on top of earlier one  
+           if ( placeX <= ArrPlaceX[j] && placeX2 > ArrPlaceX[j])
+           { 
+             accepted = false;
+             break;
            }
-           
+            if ( ArrPlaceX2[j] > placeX && placeX2 > ArrPlaceX2[j])
+           { 
+             accepted = false;
+             break;
+           }
          }
-  
+            
+            // if the new platform is not on top of any previous platform, save it
           if (accepted)
            {
             ArrPlaceX2[counter] = placeX2;
@@ -212,37 +219,6 @@ void platforms()
            counter++;
         }
     
-    //platforms that are in the air
-      while ( counter < 7)
-      {
-        placeX = random(50, 700);
-        placeY = random(30, 400);
-        placeX2 = random(placeX + 10, placeX + 150);
-        placeY2 = random(placeY + 10, placeY + 20);
-     
-      for ( int j = 4; j < counter; ++j )
-         {
-            accepted = false;
-            
-            // test in a new platform is on top of previous ones
-           if ( placeX2 <= ArrPlaceX[j] || placeX >= ArrPlaceX2[j] || placeY2 <= ArrPlaceY[j] )
-           {
-              accepted = true;
-           }
-            
-         }
-  
-          if (accepted)
-           {
-            ArrPlaceX2[counter] = placeX2;
-            ArrPlaceY2[counter] = placeY2;
-            ArrPlaceX[counter] = placeX;
-            ArrPlaceY[counter] = placeY;
-           }  
-           
-           counter++;
-    
-        }
     
      platformsDrawn = true;
     
