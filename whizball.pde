@@ -205,6 +205,11 @@ void platforms()
              accepted = false;
              break;
            }
+           if ( placeX > ArrPlaceX[j] &&  placeX2 < ArrPlaceX2[j] || placeX < ArrPlaceX[j] &&  placeX2 > ArrPlaceX2[j])
+           {
+             accepted = false;
+             break;
+           }
          }
             
             // if the new platform is not on top of any previous platform, save it
@@ -239,15 +244,17 @@ void collisionPlatform()
 {
   for ( int i = 0; i < 7; ++i )
   {
-    if ( xpos > ArrPlaceX[i] - rad && xpos < ArrPlaceX2[i] + rad &&  ypos - rad < ArrPlaceY2[i] && ypos + rad > ArrPlaceY[i] )
+    // test if the ball is about to go inside a platform
+    if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
     {
-      if( ypos < ArrPlaceY[i] || ypos > ArrPlaceY2[i] )// iff the ball arrives under or top of the platfrom
+      // test if the ball arrives top of the platfrom
+      if( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
       {
         ydirection *= -1;
         continue;
       }
       
-       else//if it arrives from the sides
+       if( xpos <= ArrPlaceX[i] + rad || xpos >= ArrPlaceX2[i] - rad )//if it arrives from the sides
       {
         xdirection *= -1;
       }
