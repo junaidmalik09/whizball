@@ -16,7 +16,6 @@ String userName = "";
 boolean gameStarted = false;
 boolean userNameInput = false;
 
-boolean gameEnded = false;
 
 
 PFont font;
@@ -40,7 +39,17 @@ float [] ArrPlaceY = new float[7]; // Array to store starting Y coordinates
 boolean platformsDrawn; // True if platform arrays are full
 
 
+boolean gameEnded = false;
+boolean floorDone = false;
 
+// depth of the ground and ceiling
+float depth = 10;
+// size of the hole
+float holeLenght = 100;
+
+// places of holes in ceiling and ground
+float holeC = 0;
+float holeG = 0;
 
 
 void setup()   
@@ -62,18 +71,17 @@ void setup()
 void draw() 
 {
   
-  // shows ending screen
   if(gameEnded)
   {
+  //text("Time run out",40,60);
   
-    background(0);
- 
+   background(0,0,0);
+    // Get user input 
     textSize(120);
     text("GAME OVER",75,250);
     textSize(30);
     text("press ENTER to continue", 100, 350);
-  }
-  
+}
   else if (!gameStarted ) {
     // Show start up image
     image(img1, 0, 0);
@@ -135,11 +143,15 @@ void draw()
         }
         
         
-        if (ypos > height-rad || ypos < rad) {
+        if (ypos > height-rad -depth || ypos < rad +depth) {
           ydirection *= -1;
           
-          gameEnded = true;
-        }
+          // if ball goes to the hole the game ends
+          if(xpos > holeC && xpos <holeC+holeLenght || xpos >holeG && xpos < holeG+holeLenght)
+          {
+            gameEnded = true;
+          }  
+      }
         
         collisionPlatform();
       
@@ -166,7 +178,9 @@ void draw()
         
         
   }
-       
+     
+
+  
 }
 
 
@@ -205,10 +219,9 @@ void keyPressed() {
   
   
    if( gameEnded )
-   {
+  {
     if (key == '\n') {
       
-      //values back to default
       userName = "";
       xpos = width/2;
       ypos = height/2;
@@ -219,7 +232,7 @@ void keyPressed() {
       
       time = "";
       interval = 20;
-      t = 0;
+      t = interval;
       prestartTime = 0;
       
       gameEnded = false; 
@@ -306,6 +319,31 @@ void platforms()
       platformsDrawn = true;
     }
     
+    
+    
+    // draw the floor and the ceiling
+    if(!floorDone)
+    {
+     holeC = random(0,800);
+    
+     holeG = random(0,800);
+     floorDone = true;
+    }
+    rectMode(0);
+    fill(102);
+    //ceiling
+    rect(0,0,holeC,depth);
+    rect(holeC+holeLenght,0,800,depth);
+    
+    // floor
+    rect(0,600,holeG, -depth);
+    rect(holeG+holeLenght,600,800, -depth);
+    
+   
+    
+    
+    
+    
     //draw the platforms
     for ( int i = 0; i < 7; ++i)
     {
@@ -349,7 +387,6 @@ void timer()
   t = interval-int((millis()-prestartTime)/1000);
   time = nf(t , 2);
 
-// shows warning text if less than 5s time left
 if(t < 5)
 {
  textSize(50);
@@ -357,13 +394,11 @@ if(t < 5)
  
  text( "Time is runnig out!", width/4, height/3);
 }
-
-// ends game if time runs out
 if(t == 0)
 {
   
   gameEnded= true;
-  //interval+=20;
+  
 }
 // text(time, width/2, height/2);
 }
