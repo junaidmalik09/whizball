@@ -1,145 +1,102 @@
-int rad = 30;        // Width of the shape
-float xpos, ypos;    // Starting position of shape    
 
-float xspeed = 0;  // Speed of the shape
-float yspeed = 3;  // Speed of the shape
+float ballX = 0;
+float ballY = 0;
 
-float yacceleration = 0; // Y Acceleration
-float xacceleration = 0; // X Acceleration
+float dY = 2;
+int boardL=1000;
+int boardH=400;
+PImage bg1;
+PImage bg2;
+String endText = "Congratulation You are now in Level 2";
+int score;
+PImage ball;
+int rect1=40;
+int rect2=60;
+int rposx=100;
+int rposy=100;
 
-float xdirection = 1;  // Left or Right
-float ydirection = 1;  // Top to Bottom
-PImage img1;
-String userName = "";
-
-/*** Game State Boolean Variables ****/
-boolean gameStarted = false;
-boolean userNameInput = false;
-
-
-void setup()   
-{
-  img1 = loadImage("1.jpg");
-  size(800, 600);
-  noStroke();
-  frameRate(25);
-  ellipseMode(RADIUS);
-  // Set the starting position of the shape
-  xpos = width/2;
-  ypos = height/2;
-}
-
+void setup() 
+  {
+  
+    size(boardL, boardH);
+    bg1 = loadImage("back1.jpg");
+    bg2 = loadImage("back2.jpg");
+    ball = loadImage("boy.png");
+    frameRate(30);
+  }
+     
 void draw() 
-{
-  
-  if (!gameStarted) {
-    // Show start up image
-    image(img1, 0, 0);
-  }
-  
-  else if (gameStarted && !userNameInput) {
-    background(0);
-    // Get user input 
-    textSize(36);
-    text("WHIZZBALL",300,40);
+  {
+    background(255, 255, 255);
+    image(bg1, ballX-(ballX*1.5), 0);
+    image(bg2, ballX-(ballX*1.1), 340);
+    image(ball, ballX, ballY);
+    rect(rect1, rect2, rposx, rposy);
     
-    
-    textSize(28);
-    text("Please write your name and hit enter to start playing. ", 30, 100);
-    
-    
-    text(userName,300,150);
-    fill(0,255,0);
-    
-  }
-  
-  else if (gameStarted && userNameInput) {
-    
-          background(255, 0, 0);
-          
-          if (yacceleration < 0) {
-            if (yspeed > 0.1) {
-              yspeed += yacceleration*0.1;    
-            }
-          }
-          
-          else if (yacceleration > 0) {
-            if (yspeed < 100) {
-              yspeed += yacceleration*0.1;    
-            }
-          }
-          
-      
-          // Update the position of the shape
-          xpos = xpos + ( (xspeed) * (xdirection) );
-          ypos = ypos + ( (yspeed) * (ydirection) );
-      
-        // Test to see if the shape exceeds the boundaries of the screen
-        // If it does, reverse its direction by multiplying by -1
-        if (xpos > width-rad || xpos < rad) {
-          xdirection *= -1;
-        } else {
-          fill(255);
-        }
-        
-        
-        if (ypos > height-rad || ypos < rad) {
-          ydirection *= -1;
-        }
-      
-        // Draw the shape
-        stroke(0);
-        ellipse(xpos, ypos, rad, rad);
-        stroke(0);
-        ellipse(xpos-15, ypos-8, rad/5, rad/4);
-        stroke(0);
-        ellipse(xpos+15, ypos-8, rad/5, rad/4);
-        stroke(0);
-        ellipse(xpos, ypos+15, rad/2, rad/6);
-        
-        textSize(12);
-        text(userName,40,40);
-        text("Acceleration: ",40,55);
-        text(yacceleration,150,55);
-        text("YSpeed: ",40,70);
-        text(yspeed,150,70);
-        text("XSpeed: ",40,85);
-        text(xspeed,150,85);
-  }
+    score = frameCount;
      
-   
-
-  
-}
-
-void keyPressed() {
-  if (!gameStarted ) {
-      gameStarted = true;
+     if (ballX > boardL)
+      {        
+       background(0, 0, 0);
+       noLoop();
+       text(endText,boardL/2,boardH/2);
+       text("You played: ", 50, 30);
+       text(score, 50, 50);
        
-  } 
-  
-  else if (!userNameInput) {
-     // Keep on taking user input until enter is pressed
-     if (key != '\n') {
-       userName = userName + key;
-     }
      
-     else {
-       userNameInput = true;
+      }
+   
+    ballY = ballY+dY;
+     if (ballY > boardH-(120)) {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
      }
+  if (ballY < 0) 
+    {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+     }    
+    
+    if (key == CODED) {
+    if (keyCode == LEFT) 
+    {
+      ballX= ballX-2;
+      ballX= ballX;
+    } 
+    else if (keyCode == RIGHT) 
+    {              
+       ballX= ballX+2;
+       ballX= ballX;
+    } 
+     else if (ballY < 0 && keyCode == UP) 
+    {
+      ballY= ballY+2;
+      ballY= ballY;
+      
+    } 
+    else if (ballY > 0 &&keyCode == DOWN) 
+    {
+       ballY= ballY-2;
+       ballY= ballY;
+       
+    } 
+       
+  
+  else 
+  {
+    
+  }
+  ballY = ballY+dY;
+     if (ballY > boardH) {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+     }
+  if (ballY < 0) 
+    {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+     }
+    
   }
   
-  else if (gameStarted && userNameInput) {
-    if (key == CODED) {
-      if (keyCode == UP) {
-        yacceleration += 1;
-      } else if (keyCode == DOWN) {
-        yacceleration -= 1;
-      } else if (keyCode == LEFT) {
-        xspeed -= 1;
-      } else if (keyCode == RIGHT) {
-        xspeed += 1;
-      }
-    }
+
+
+  
   }
-}
+
