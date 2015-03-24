@@ -35,25 +35,6 @@ float [] ArrPlaceY = new float[7];  // Array to store starting Y coordinates
 boolean platformsDrawn; // True if platform arrays are full
 
 
-PFont font;
-String time = ""; // time as a string
-int t = 0; //time as a numer
-int interval = 20; //the time for one level
-int prestartTime = 0; // counts the time until the user name is given
-
-float placeX2 = 0; //Ending X coordinate for a platform
-float placeY2 = 0; //Ending Y coordinate for a platform
-float placeX = 0; //Starting X coordinate for a platform
-float placeY = 0; //Starting Y coordinate for a platform
-float [] ArrPlaceX2 = new float[7]; // Array to store ending X coordinates 
-
-float [] ArrPlaceY2 = new float[7]; // Array to store ending Y coordinates
-
-float [] ArrPlaceX = new float[7]; // Array to store starting X coordinates
-
-float [] ArrPlaceY = new float[7]; // Array to store starting Y coordinates
-
-boolean platformsDrawn; // True if platform arrays are full
 
 
 boolean gameEnded = false;
@@ -164,7 +145,6 @@ void draw()
           fill(255);
         }
         
-<<<<<<< HEAD
         
         if (ypos > height-rad -depth || ypos < rad +depth) {
           ydirection *= -1;
@@ -177,15 +157,6 @@ void draw()
       }
         
         collisionPlatform();
-=======
-        if (ypos > height-rad || ypos < rad) {
-          ydirection *= -1;
-        }
-        
-         //Test to see if the shape collides with a plaform
-        collisionPlatform();
-        
->>>>>>> develop
       
         // Draw the shape
         stroke(0);
@@ -436,6 +407,7 @@ if(t == 0)
 // text(time, width/2, height/2);
 }
 
+/*
 //Name: platforms
 //use: for creating and drawing the platforms
 void platforms()
@@ -542,4 +514,4 @@ void timer()
     interval+=20;
   }
   // text(time, width/2, height/2);
-}
+}*/
