@@ -16,6 +16,23 @@ String userName = "";
 boolean gameStarted = false;
 boolean userNameInput = false;
 
+PFont font;
+String time = "";     // time as a string
+int t = 0;            //time as a numer
+int interval = 20;    //the time for one level
+int prestartTime = 0; // counts the time until the user name is given
+
+float placeX2 = 0; //Ending X coordinate for a platform
+float placeY2 = 0; //Ending Y coordinate for a platform
+float placeX = 0;  //Starting X coordinate for a platform
+float placeY = 0;  //Starting Y coordinate for a platform
+
+float [] ArrPlaceX2 = new float[7]; // Array to store ending X coordinates 
+float [] ArrPlaceY2 = new float[7]; // Array to store ending Y coordinates 
+float [] ArrPlaceX = new float[7];  // Array to store starting X coordinates 
+float [] ArrPlaceY = new float[7];  // Array to store starting Y coordinates 
+
+boolean platformsDrawn; // True if platform arrays are full
 
 void setup()   
 {
@@ -27,6 +44,7 @@ void setup()
   // Set the starting position of the shape
   xpos = width/2;
   ypos = height/2;
+  font = createFont("Arial", 30);
 }
 
 void draw() 
@@ -56,6 +74,10 @@ void draw()
   else if (gameStarted && userNameInput) {
     
           background(255, 0, 0);
+          timer();
+          textSize(35);
+          text(time, width/2, height/8);
+          platforms();
           
           if (yacceleration < 0) {
             if (yspeed > 0.1) {
@@ -82,10 +104,13 @@ void draw()
           fill(255);
         }
         
-        
         if (ypos > height-rad || ypos < rad) {
           ydirection *= -1;
         }
+        
+         //Test to see if the shape collides with a plaform
+        collisionPlatform();
+        
       
         // Draw the shape
         stroke(0);
@@ -122,6 +147,7 @@ void keyPressed() {
      // Keep on taking user input until enter is pressed
      if (key != '\n') {
        userName = userName + key;
+       prestartTime = millis();
      }
      
      else {
@@ -142,4 +168,112 @@ void keyPressed() {
       }
     }
   }
+}
+
+//Name: platforms
+//use: for creating and drawing the platforms
+void platforms()
+{
+  boolean accepted = false;
+ 
+  if (!platformsDrawn)
+  {  
+    int counter = 0;
+    
+    //new platforms are created 7 times. 
+    //However, not all of them are saved, if they are on top of each other
+    while ( counter < 7 )
+    {
+      accepted = false; // true if plaforms are not on top of each other
+      placeX = random(0, 700); 
+      placeY = random(300, 550);
+      placeX2 = random(placeX + 10, placeX + 55);
+      placeY2 = 600;
+   
+         for ( int j = 0; j < counter; ++j )
+         {
+            accepted = true;
+            
+            // check if the new platform is on top of earlier one  
+           if ( placeX <= ArrPlaceX[j] && placeX2 > ArrPlaceX[j])
+           { 
+             accepted = false;
+             break;
+           }
+            if ( ArrPlaceX2[j] > placeX && placeX2 > ArrPlaceX2[j])
+           { 
+             accepted = false;
+             break;
+           }
+           if ( placeX > ArrPlaceX[j] &&  placeX2 < ArrPlaceX2[j] || placeX < ArrPlaceX[j] &&  placeX2 > ArrPlaceX2[j])
+           {
+             accepted = false;
+             break;
+           }
+         }
+            
+            // if the new platform is not on top of any previous platform, save it
+          if (accepted)
+           {
+            ArrPlaceX2[counter] = placeX2;
+            ArrPlaceY2[counter] = placeY2;
+            ArrPlaceX[counter] = placeX;
+            ArrPlaceY[counter] = placeY;
+           }  
+        
+           counter++;
+        }
+    
+    
+     platformsDrawn = true;
+    
+    } 
+   
+   //draw the platforms
+    for ( int i = 0; i < 7; ++i)
+    {
+      rectMode(CORNERS);
+      fill(102);
+      rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
+    }
+}
+
+//Name: collisionPlatform
+//use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
+void collisionPlatform()
+{
+  for ( int i = 0; i < 7; ++i )
+  {
+    // test if the ball is about to go inside a platform
+    if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
+    {
+      // test if the ball arrives top of the platfrom
+      if( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
+      {
+        ydirection *= -1;
+        continue;
+      }
+      
+       if( xpos <= ArrPlaceX[i] + rad || xpos >= ArrPlaceX2[i] - rad )//if it arrives from the sides
+      {
+        xdirection *= -1;
+      }
+      
+    }
+    
+  }  
+  
+}
+
+//Name: timer
+//use: counts dowm the time
+void timer()
+{
+  t = interval-int((millis()-prestartTime)/1000);
+  time = nf(t , 2);
+  if(t == 0)
+  {
+    interval+=20;
+  }
+  // text(time, width/2, height/2);
 }
