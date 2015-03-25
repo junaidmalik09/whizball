@@ -27,10 +27,10 @@ float placeY2 = 0; //Ending Y coordinate for a platform
 float placeX = 0;  //Starting X coordinate for a platform
 float placeY = 0;  //Starting Y coordinate for a platform
 
-float [] ArrPlaceX2 = new float[7]; // Array to store ending X coordinates 
-float [] ArrPlaceY2 = new float[7]; // Array to store ending Y coordinates 
-float [] ArrPlaceX = new float[7];  // Array to store starting X coordinates 
-float [] ArrPlaceY = new float[7];  // Array to store starting Y coordinates 
+float [] ArrPlaceX2 = new float[10]; // Array to store ending X coordinates 
+float [] ArrPlaceY2 = new float[10]; // Array to store ending Y coordinates 
+float [] ArrPlaceX = new float[10];  // Array to store starting X coordinates 
+float [] ArrPlaceY = new float[10];  // Array to store starting Y coordinates 
 
 boolean platformsDrawn; // True if platform arrays are full
 
@@ -311,7 +311,7 @@ void platforms()
     
     //new platforms are created 7 times. 
     //However, not all of them are saved, if they are on top of each other
-    while ( counter < 7 )
+    while ( counter < 10 )
     {
       accepted = false; // true if plaforms are not on top of each other
       placeX = random(0, 700); 
@@ -359,7 +359,7 @@ void platforms()
     } 
     
     // draw the floor and the ceiling
-    if(!floorDone)
+  if(!floorDone)
     {
      holeC = random(0,800);
     
@@ -377,7 +377,7 @@ void platforms()
     rect(holeG+holeLenght,boardH,boardL, -depth);
    
    //draw the platforms
-    for ( int i = 0; i < 7; ++i)
+    for ( int i = 0; i < 10; ++i)
     {
       rectMode(CORNERS);
       fill(102);
@@ -499,7 +499,7 @@ void platforms()
 //use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
 
 
-void collisionPlatform()
+/*void collisionPlatform()
 {
   for ( int i = 0; i < 7; ++i )
   {  
@@ -520,7 +520,7 @@ void collisionPlatform()
       }
     }
   }
-}
+}*/
 
 //Name: timer
 //use: counts dowm the time
@@ -612,7 +612,7 @@ void platforms()
       fill(102);
       rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
     }
-}
+}*/
 
 //Name: collisionPlatform
 //use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
@@ -641,7 +641,7 @@ void collisionPlatform()
   
 }
 
-//Name: timer
+/*//Name: timer
 //use: counts dowm the time
 void timer()
 {
