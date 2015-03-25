@@ -2,7 +2,7 @@ int rad = 30;        // Width of the shape
 float xpos, ypos;    // Starting position of shape    
 
 float xspeed = 0;  // Speed of the shape
-float yspeed = 3;  // Speed of the shape
+float yspeed = 9;  // Speed of the shape
 
 float yacceleration = 0; // Y Acceleration
 float xacceleration = 0; // X Acceleration
@@ -34,6 +34,18 @@ float [] ArrPlaceY = new float[7];  // Array to store starting Y coordinates
 
 boolean platformsDrawn; // True if platform arrays are full
 
+float dY = 2;
+int boardL=1000;
+int boardH=400;
+PImage bg1;
+PImage bg2;
+String endText = "Congratulation You are now in Level 2";
+int score;
+PImage ball;
+int rect1=40;
+int rect2=60;
+int rposx=100;
+int rposy=100;
 
 
 
@@ -55,10 +67,12 @@ void setup()
   img1 = loadImage("1.jpg");
   size(800, 600);
   
+  size(boardL, boardH);
+  bg1 = loadImage("back1.jpg");
+  bg2 = loadImage("back2.jpg");
   
+  frameRate(30);
   noStroke();
-  
-  frameRate(25);
   ellipseMode(RADIUS);
   // Set the starting position of the shape
   xpos = width/2;
@@ -108,7 +122,34 @@ void draw()
   
   else if (gameStarted && userNameInput ) {
     
-          background(255, 0, 0);
+          
+          background(255, 255, 255);
+          image(bg1, xpos-(xpos*1.5), 0);
+          //image(bg2, xpos-(xpos*1.1), 340);
+          //rect(rect1, rect2, rposx, rposy);
+          
+          score = frameCount;
+          
+          if (xpos > boardL)
+          {        
+           background(0, 0, 0);
+           noLoop();
+           text(endText,boardL/2,boardH/2);
+           text("You played: ", 50, 30);
+           text(score, 50, 50);
+           
+         
+          }
+       
+          ypos = ypos+dY;
+           if (ypos > boardH-(120)) {
+              dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+           }
+          if (ypos < 0) 
+          {
+            dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+           } 
+          
           timer();
           textSize(35);
           text(time, width/2, height/8);
@@ -128,7 +169,7 @@ void draw()
           
       
           // Update the position of the shape
-          xpos = xpos + ( (xspeed) * (xdirection) );
+          //xpos = xpos + ( (xspeed) * (xdirection) );
           ypos = ypos + ( (yspeed) * (ydirection) );
       
         // Test to see if the shape exceeds the boundaries of the screen
@@ -172,12 +213,22 @@ void draw()
         
         textSize(12);
         text(userName,40,40);
+        
+        // Debug Info
         text("Acceleration: ",40,55);
         text(yacceleration,150,55);
-        text("YSpeed: ",40,70);
+        /*text("YSpeed: ",40,70);
         text(yspeed,150,70);
         text("XSpeed: ",40,85);
-        text(xspeed,150,85);
+        text(xspeed,150,85);*/
+        
+        if (ypos > boardH) {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+     }
+  if (ypos < 0) 
+    {
+    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+     }
         
         
   }
@@ -210,13 +261,14 @@ void keyPressed() {
   else if (gameStarted && userNameInput) {
     if (key == CODED) {
       if (keyCode == UP) {
-        yacceleration += 1;
+        //yacceleration += 3;
       } else if (keyCode == DOWN) {
-        yacceleration -= 1;
+        //yacceleration -= 3;
       } else if (keyCode == LEFT) {
-        xspeed -= 1;
+        //xspeed -= 1;
+        xpos -= 3;
       } else if (keyCode == RIGHT) {
-        xspeed += 1;
+        xpos += 3;
       }
     }
   }
@@ -250,6 +302,92 @@ void keyPressed() {
 //Name: platforms
 //use: for creating and drawing the platforms
 void platforms()
+{
+  boolean accepted = false;
+ 
+  if (!platformsDrawn)
+  {  
+    int counter = 0;
+    
+    //new platforms are created 7 times. 
+    //However, not all of them are saved, if they are on top of each other
+    while ( counter < 7 )
+    {
+      accepted = false; // true if plaforms are not on top of each other
+      placeX = random(0, 700); 
+      placeY = random(300, 550);
+      placeX2 = random(placeX + 10, placeX + 55);
+      placeY2 = 600;
+   
+         for ( int j = 0; j < counter; ++j )
+         {
+            accepted = true;
+            
+            // check if the new platform is on top of earlier one  
+           if ( placeX <= ArrPlaceX[j] && placeX2 > ArrPlaceX[j])
+           { 
+             accepted = false;
+             break;
+           }
+            if ( ArrPlaceX2[j] > placeX && placeX2 > ArrPlaceX2[j])
+           { 
+             accepted = false;
+             break;
+           }
+           if ( placeX > ArrPlaceX[j] &&  placeX2 < ArrPlaceX2[j] || placeX < ArrPlaceX[j] &&  placeX2 > ArrPlaceX2[j])
+           {
+             accepted = false;
+             break;
+           }
+         }
+            
+            // if the new platform is not on top of any previous platform, save it
+          if (accepted)
+           {
+            ArrPlaceX2[counter] = placeX2;
+            ArrPlaceY2[counter] = placeY2;
+            ArrPlaceX[counter] = placeX;
+            ArrPlaceY[counter] = placeY;
+           }  
+        
+           counter++;
+        }
+    
+    
+     platformsDrawn = true;
+    
+    } 
+    
+    // draw the floor and the ceiling
+    if(!floorDone)
+    {
+     holeC = random(0,800);
+    
+     holeG = random(0,800);
+     floorDone = true;
+    }
+    rectMode(0);
+    fill(102);
+    //ceiling
+    rect(0,0,holeC,depth);
+    rect(holeC+holeLenght,0,boardL,depth);
+    
+    // floor
+    rect(0,600,holeG, -depth);
+    rect(holeG+holeLenght,boardH,boardL, -depth);
+   
+   //draw the platforms
+    for ( int i = 0; i < 7; ++i)
+    {
+      rectMode(CORNERS);
+      fill(102);
+      rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
+    }
+}
+
+//Name: platforms
+//use: for creating and drawing the platforms
+/*void platforms()
 {
   boolean accepted = false;
     if (!platformsDrawn)
@@ -355,7 +493,7 @@ void platforms()
       fill(102);
       rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
      }
-    }
+    }*/
 
 //Name: collisionPlatform
 //use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
