@@ -15,6 +15,7 @@ String userName = "";
 /*** Game State Boolean Variables ****/
 boolean gameStarted = false;
 boolean userNameInput = false;
+boolean firstStart = true; // determines the first starting of the game, so that the backround story is only shown once
 
 PFont font;
 String time = "";     // time as a string
@@ -83,7 +84,7 @@ void setup()
 void draw() 
 {
 
-  if (!gameStarted ) {
+  if (!gameStarted && firstStart) {
     // Show start up image
     //image(img1, 0, 0);
     textSize(36);
@@ -97,6 +98,7 @@ void draw()
     //text("It has to run faster and get away from more guards.", 30, 250);
     //text("Luckily there are weapons to collect on the way to make the escape easier.", 30, 290);
     text("Help the ball to get out!", 35, 330);
+    firstStart = false;
   } else if (gameEnded)
   {
     //text("Time run out",40,60);
@@ -109,12 +111,12 @@ void draw()
     text("press ENTER to continue", 100, 350);
   } else if (!gameStarted ) {
     // Show start up image
-    image(img1, 0, 0);
+    //image(img1, 0, 0);
   } else if (gameStarted && !userNameInput) {
     background(0);
     // Get user input 
     textSize(36);
-    text("BREAKOUTBALL", 300, 40);
+    text("BREAKOUT BALL", 300, 40);
 
 
     textSize(28);
@@ -248,9 +250,11 @@ void keyPressed() {
       } else if (keyCode == DOWN) {
         //yacceleration -= 3;
       } else if (keyCode == LEFT) {
+        collisionPlatform();
         //xspeed -= 1;
         xpos -= 3;
       } else if (keyCode == RIGHT) {
+        collisionPlatform();
         xpos += 3;
       }
       collisionPlatform();
