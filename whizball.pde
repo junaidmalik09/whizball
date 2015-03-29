@@ -157,7 +157,6 @@ void draw()
     textSize(35);
     text(time, width/2, height/8);
     platforms();
-    //collisionPlatform();
 
     if (yacceleration < 0) {
       if (yspeed > 0.1) {
@@ -233,6 +232,7 @@ void draw()
 
 
 void keyPressed() {
+  boolean collision = false;
   if (!gameStarted  ) {
     gameStarted = true;
   } else if (!userNameInput  ) {
@@ -250,14 +250,19 @@ void keyPressed() {
       } else if (keyCode == DOWN) {
         //yacceleration -= 3;
       } else if (keyCode == LEFT) {
-        collisionPlatform();
         //xspeed -= 1;
-        xpos -= 3;
+        collision = collisionPlatform();
+        if (!collision)
+        {
+          xpos -= 3;
+        }
       } else if (keyCode == RIGHT) {
-        collisionPlatform();
-        xpos += 3;
+        collision = collisionPlatform();
+        if (!collision)
+        {
+          xpos += 3;
+        }
       }
-      collisionPlatform();
     }
   }
 
@@ -465,26 +470,29 @@ void timer()
 
 //Name: collisionPlatform
 //use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
-void collisionPlatform()
+boolean collisionPlatform()
 {
+  boolean collision = false;
   for ( int i = 0; i < 10; ++i )
   {
     // test if the ball is about to go inside a platform
     if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
     {
+      collision = true;
       // test if the ball arrives top of the platfrom
-      if ( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
+      if ( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) && ydirection == 1 )
       {
         ydirection *= -1;
         continue;
       }
 
-      if ( xpos <= ArrPlaceX[i] + rad || xpos >= ArrPlaceX2[i] - rad )//if it arrives from the sides
+      if ( xpos < ArrPlaceX[i] || xpos > ArrPlaceX2[i])//if it arrives from the sides
       {
         xdirection *= -1;
       }
     }
   }
+  return collision;
 }
 
 
