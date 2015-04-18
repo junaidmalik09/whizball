@@ -545,74 +545,7 @@ if(t == 0)
 // text(time, width/2, height/2);
 }
 
-/*
-//Name: platforms
-//use: for creating and drawing the platforms
-void platforms()
-{
-  boolean accepted = false;
- 
-  if (!platformsDrawn)
-  {  
-    int counter = 0;
-    
-    //new platforms are created 7 times. 
-    //However, not all of them are saved, if they are on top of each other
-    while ( counter < 7 )
-    {
-      accepted = false; // true if plaforms are not on top of each other
-      placeX = random(0, 700); 
-      placeY = random(300, 550);
-      placeX2 = random(placeX + 10, placeX + 55);
-      placeY2 = 600;
-   
-         for ( int j = 0; j < counter; ++j )
-         {
-            accepted = true;
-            
-            // check if the new platform is on top of earlier one  
-           if ( placeX <= ArrPlaceX[j] && placeX2 > ArrPlaceX[j])
-           { 
-             accepted = false;
-             break;
-           }
-            if ( ArrPlaceX2[j] > placeX && placeX2 > ArrPlaceX2[j])
-           { 
-             accepted = false;
-             break;
-           }
-           if ( placeX > ArrPlaceX[j] &&  placeX2 < ArrPlaceX2[j] || placeX < ArrPlaceX[j] &&  placeX2 > ArrPlaceX2[j])
-           {
-             accepted = false;
-             break;
-           }
-         }
-            
-            // if the new platform is not on top of any previous platform, save it
-          if (accepted)
-           {
-            ArrPlaceX2[counter] = placeX2;
-            ArrPlaceY2[counter] = placeY2;
-            ArrPlaceX[counter] = placeX;
-            ArrPlaceY[counter] = placeY;
-           }  
-        
-           counter++;
-        }
-    
-    
-     platformsDrawn = true;
-    
-    } 
-   
-   //draw the platforms
-    for ( int i = 0; i < 7; ++i)
-    {
-      rectMode(CORNERS);
-      fill(102);
-      rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
-    }
-}*/
+
 
 //Name: collisionPlatform
 //use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
@@ -641,15 +574,3 @@ void collisionPlatform()
   
 }
 
-/*//Name: timer
-//use: counts dowm the time
-void timer()
-{
-  t = interval-int((millis()-prestartTime)/1000);
-  time = nf(t , 2);
-  if(t == 0)
-  {
-    interval+=20;
-  }
-  // text(time, width/2, height/2);
-}*/
