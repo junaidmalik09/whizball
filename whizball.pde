@@ -62,6 +62,16 @@ float holeC = 0;
 float holeG = 0;
 
 
+//scoreboard
+String [] players = new String[20];
+int [] scoreboard = new int[20];
+
+
+int points = 0;
+int game = 0;
+int line = 0;
+
+
 void setup()   
 {
   img1 = loadImage("1.jpg");
@@ -90,14 +100,45 @@ void draw()
   
   else if(gameEnded)
   {
-  //text("Time run out",40,60);
+  
   
    background(0,0,0);
     // Get user input 
-    textSize(120);
-    text("GAME OVER",75,250);
-    textSize(30);
-    text("press ENTER to continue", 100, 350);
+    textSize(90);
+    text("GAME OVER",50,100);
+    textSize(20);
+    text("press ENTER to continue", 100, 150);
+    
+    
+    //scoreboard
+    if(game < 19)
+    {
+    players[game] = userName;
+    scoreboard[game] = points;
+    }
+    
+    textSize(25);
+    text("Scoreboard", 675, 50);
+    
+    int n=0;
+   
+    while(n <= game && n<20)
+    {
+      line=line+20;
+      textSize(20);
+      text(players[n],675,100+line);
+      text(scoreboard[n], 800,100+line);
+      n++;
+     
+    }
+    
+    
+    
+    line=0;
+    
+    
+    
+    
 }
   else if (!gameStarted ) {
     // Show start up image
@@ -190,12 +231,15 @@ void draw()
         if (ypos > height-rad -depth || ypos < rad +depth) {
           ydirection *= -1;
           
-          // if ball goes to the hole the game ends
-          if(xpos > holeC && xpos <holeC+holeLenght || xpos >holeG && xpos < holeG+holeLenght)
+       
+      }
+      
+      
+      // if ball goes to the hole the game ends
+      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
           {
             gameEnded = true;
           }  
-      }
         
         collisionPlatform();
       
@@ -294,6 +338,8 @@ void keyPressed() {
       gameEnded = false; 
       gameStarted= false;
       userNameInput =false;
+      game++;
+      points=0;
    
     }
   }
@@ -373,7 +419,7 @@ void platforms()
     rect(holeC+holeLenght,0,boardL,depth);
     
     // floor
-    rect(0,600,holeG, -depth);
+    rect(0, boardH,holeG, -depth);
     rect(holeG+holeLenght,boardH,boardL, -depth);
    
    //draw the platforms
