@@ -1,5 +1,24 @@
 int rad = 30;        // Width of the shape
-float xpos, ypos;    // Starting position of shape    
+float xpos, ypos;    // Starting position of shape  
+
+// Power Ups //
+
+float xpower1 = 200;
+float ypower1 = 100;
+float xpower2 = 400;
+float ypower2 = 100;
+float nxpower1 = 0;
+float nypower1 = 0;
+float nxpower2 = 0;
+float nypower2 = 0;
+float radpower = 20;
+color c1 = #daa520;
+color c2 = #ffff00;
+color c3 = #ee8262;
+int powermode=0;
+
+
+// ---------- //
 
 float xspeed = 0;  // Speed of the shape
 float yspeed = 9;  // Speed of the shape
@@ -10,6 +29,8 @@ float xacceleration = 0; // X Acceleration
 float xdirection = 1;  // Left or Right
 float ydirection = 1;  // Top to Bottom
 PImage img1;
+PImage img2;
+PImage img3;
 String userName = "";
 
 /*** Game State Boolean Variables ****/
@@ -92,6 +113,7 @@ void setup()
   xpos = 50;
   ypos = 50;
   font = createFont("Arial", 30);
+  img2 = loadImage("shield1.png");
 }
 
 void draw() 
@@ -262,6 +284,12 @@ void draw()
         
       
         // Draw the shape
+        if (powermode == 0) {
+          fill(c1);
+        }
+        else if (powermode == 1) {
+          fill(c2);
+        }
         stroke(0);
         ellipse(xpos, ypos, rad, rad); 
         stroke(0);
@@ -270,8 +298,14 @@ void draw()
         ellipse(xpos+15, ypos-8, rad/5, rad/4);
         stroke(0);
         ellipse(xpos, ypos+15, rad/2, rad/6);
-        nasties();
         
+        //nasties();
+        //println(xpower1);
+        //println(ypower1);
+        //println(radpower);
+        //println("==========");
+        image(img2, xpower1, ypower1);
+        image(img2, xpower2, ypower2);
         
         textSize(12);
         text(userName,40,40);
@@ -291,7 +325,14 @@ void draw()
     {
     dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
      }
+      
         
+        //fill(#ffffff);
+        
+        //image(img2, xpower2, ypower2);         
+        powerup();
+        powermove();  
+        nasties();
         
   }
      
@@ -308,8 +349,8 @@ void nasties() {
   float curY = 0;
   
   for (int i=0;i<4;i++) {
-    curX = random(200,700);
-    curY = random(200,500);
+    curX = 300 + i*100;
+    curY = 100 + 1*100;
     if (nastiesX[i] == 0) {
       while (abs(prevX-curX) < 100) {
         curX = random(10,700);
@@ -331,7 +372,8 @@ void nasties() {
     float distance = (float)Math.sqrt(dx * dx + dy * dy);
     
     
-    if (distance < rad + 25) {
+    if (powermode == 0) {
+      if (distance < rad + 25) {
         // collision detected!
         println(i);
         fill(255,0,0);
@@ -341,6 +383,18 @@ void nasties() {
         }
         
         gameEnded = true;  
+      }
+    }
+    
+    else if (powermode == 1) {
+      if (distance < rad + 25) {
+        // collision detected!
+        println(i);
+        fill(255,0,0);
+        nastiesX[i] = -100;
+        nastiesY[i] = -100;
+        powermode = 0;  
+      }
     }
 
     
@@ -382,13 +436,13 @@ void keyPressed() {
         collision = collisionPlatform();
         if (!collision)
         {
-          xpos -= 3;
+          xpos -= 10;
         }
       } else if (keyCode == RIGHT) {
         collision = collisionPlatform();
         if (!collision)
         {
-          xpos += 3;
+          xpos += 10;
         }
       }
     }
@@ -437,8 +491,8 @@ void platforms()
     while ( counter < 10 )
     {
       accepted = false; // true if plaforms are not on top of each other
-      placeX = random(0, 700); 
-      placeY = random(300, 550);
+      placeX = 100+(counter*100); 
+      placeY = 300+(counter*20);
       placeX2 = random(placeX + 10, placeX + 55);
       placeY2 = 600;
    
@@ -484,9 +538,9 @@ void platforms()
     // draw the floor and the ceiling
   if(!floorDone)
     {
-     holeC = random(0,800);
+     holeC = 700;
     
-     holeG = random(0,800);
+     holeG = 600;
      floorDone = true;
     }
     rectMode(0);
@@ -567,3 +621,41 @@ boolean collisionPlatform()
   
 }
 
+
+void powerup()
+{  
+  
+  if((abs(xpos-xpower1)<=30) &&(abs(ypos-ypower1)<=30))
+  {
+      
+      println("collision detected");
+      print(xpos); print("--"); print(xpower1);
+      xpower1=2000;      
+      c1=c2;
+      rad=35;
+      
+      powermode=1;
+      
+      
+      
+  }
+  if((abs(xpos-xpower2) <=30)&&(abs(ypos-ypower2)<=30))
+  {
+        
+      fill(255,0,0);
+      xpower2=2000;      
+      c1=c2;
+      rad=35;          
+      powermode=1;
+          
+    
+  }
+}
+  
+  void powermove()
+{    
+  xpower1 = xpower1;
+  ypower2 = ypower2;
+    
+    
+  }
