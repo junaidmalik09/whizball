@@ -46,7 +46,7 @@ int rect1=40;
 int rect2=60;
 int rposx=100;
 int rposy=100;
-
+PImage enemy;
 
 
 boolean gameEnded = false;
@@ -71,10 +71,13 @@ int points = 0;
 int game = 0;
 int line = 0;
 
+float[] nastiesX = {0,0,0,0,0,0};
+float[] nastiesY = {0,0,0,0,0,0};
 
 void setup()   
 {
   img1 = loadImage("1.jpg");
+  enemy = loadImage("enemy.png");
   size(800, 600);
   
   size(boardL, boardH);
@@ -85,8 +88,8 @@ void setup()
   noStroke();
   ellipseMode(RADIUS);
   // Set the starting position of the shape
-  xpos = width/2;
-  ypos = height/2;
+  xpos = 50;
+  ypos = 50;
   font = createFont("Arial", 30);
 }
 
@@ -147,6 +150,7 @@ void draw()
   
   else if (gameStarted && !userNameInput) {
     background(0);
+    
     // Get user input 
     textSize(36);
     text("WHIZZBALL",300,40);
@@ -165,8 +169,9 @@ void draw()
     
           
           background(255, 255, 255);
+          
           image(bg1, xpos-(xpos*1.5), 0);
-          //image(bg2, xpos-(xpos*1.1), 340);
+          //image(enemy,0,0,30,30);
           //rect(rect1, rect2, rposx, rposy);
           
           score = frameCount;
@@ -242,17 +247,18 @@ void draw()
           }  
         
         collisionPlatform();
+        
       
         // Draw the shape
         stroke(0);
-        ellipse(xpos, ypos, rad, rad);
+        ellipse(xpos, ypos, rad, rad); 
         stroke(0);
         ellipse(xpos-15, ypos-8, rad/5, rad/4);
         stroke(0);
         ellipse(xpos+15, ypos-8, rad/5, rad/4);
         stroke(0);
         ellipse(xpos, ypos+15, rad/2, rad/6);
-        
+        nasties();
         
         
         textSize(12);
@@ -281,7 +287,57 @@ void draw()
   
 }
 
+// Name: nasties()
+// Use: put random nasty images on screen
+void nasties() {
+  float prevX = 0;
+  float prevY = 0;
+  float curX = 0;
+  float curY = 0;
+  
+  for (int i=0;i<4;i++) {
+    curX = random(200,700);
+    curY = random(200,500);
+    if (nastiesX[i] == 0) {
+      while (abs(prevX-curX) < 100) {
+        curX = random(10,700);
+      }
+     nastiesX[i] = prevX = curX; 
+    } 
+    if (nastiesY[i] == 0) {
+      while (abs(prevY-curY) < 100) {
+        curY = random(10,500);
+      }
+     nastiesY[i] = prevY = curY;
+     
+    }
+    fill(255,0,0);
+    ellipse(nastiesX[i],nastiesY[i],25,25);
+    
+    float dx = xpos - nastiesX[i];
+    float dy = ypos - nastiesY[i];
+    float distance = (float)Math.sqrt(dx * dx + dy * dy);
+    
+    
+    if (distance < rad + 25) {
+        // collision detected!
+        println(i);
+        fill(255,0,0);
+        int time = millis();
+        while(millis() - time < 2000) {
+          println("wait");
+        }
+        
+        gameEnded = true;  
+    }
 
+    
+  }
+  
+  
+  
+  
+}
 
 
 void keyPressed() {
