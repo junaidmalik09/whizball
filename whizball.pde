@@ -253,6 +253,27 @@ void draw()
           //xpos = xpos + ( (xspeed) * (xdirection) );
           ypos = ypos + ( (yspeed) * (ydirection) );
       
+      //check if the ball collides with floor/ceiling. 
+       if (ypos > height-rad -depth || ypos < rad +depth)
+       {
+          ydirection *= -1;
+          
+           // if ball goes to the hole the game ends
+      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+          {
+            gameEnded = true;
+          }  
+          
+          else
+         {//if there is  collision, send the ball the other way
+           ypos = ypos + ( (yspeed) * (ydirection) );
+         }
+      }
+            
+      
+      
+       //if (ypos > height-rad -depth || ypos < rad +depth) {
+         // ydirection *= -1;
         // Test to see if the shape exceeds the boundaries of the screen
         // If it does, reverse its direction by multiplying by -1
         if (xpos > width-rad || xpos < rad) {
@@ -268,18 +289,16 @@ void draw()
         }
         
         collisionPlatform();
-        if (ypos > height-rad -depth || ypos < rad +depth) {
-          ydirection *= -1;
-          
-       
-      }
+      //  if (ypos > height-rad -depth || ypos < rad +depth) {
+       //   ydirection *= -1;
+      //}
       
       
       // if ball goes to the hole the game ends
-      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
-          {
-            gameEnded = true;
-          }  
+      //if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+        //  {
+          //  gameEnded = true;
+          //}  
         
         
         
@@ -589,37 +608,30 @@ if(t == 0)
 }
 
 
-
-//Name: collisionPlatform
-//use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
+//checks that the ball does not go on top of a platform. Changes the ball's direction, when it hits a platform
 boolean collisionPlatform()
 {
   boolean collision = false;
   for ( int i = 0; i < AMOUNT; ++i )
   {
-    
     // test if the ball is about to go inside a platform
     if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
     {
       collision = true;
       // test if the ball arrives top of the platfrom
-      if( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
+      if ( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) && ydirection == 1 )
       {
         ydirection *= -1;
         continue;
       }
-      
-       if( xpos <= ArrPlaceX[i]  || xpos >= ArrPlaceX2[i]  )//if it arrives from the sides
+
+      if ( xpos < ArrPlaceX[i] || xpos > ArrPlaceX2[i])//if it arrives from the sides
       {
         xdirection *= -1;
       }
-      
     }
-    
   }
-
-  return collision;  
-  
+  return collision;
 }
 
 
