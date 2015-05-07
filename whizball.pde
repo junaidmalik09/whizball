@@ -49,10 +49,11 @@ float placeY2 = 0; //Ending Y coordinate for a platform
 float placeX = 0;  //Starting X coordinate for a platform
 float placeY = 0;  //Starting Y coordinate for a platform
 
-float [] ArrPlaceX2 = new float[10]; // Array to store ending X coordinates 
-float [] ArrPlaceY2 = new float[10]; // Array to store ending Y coordinates 
-float [] ArrPlaceX = new float[10];  // Array to store starting X coordinates 
-float [] ArrPlaceY = new float[10];  // Array to store starting Y coordinates 
+int AMOUNT = 7;
+float [] ArrPlaceX2 = new float[AMOUNT]; // Array to store ending X coordinates 
+float [] ArrPlaceY2 = new float[AMOUNT]; // Array to store ending Y coordinates 
+float [] ArrPlaceX = new float[AMOUNT];  // Array to store starting X coordinates 
+float [] ArrPlaceY = new float[AMOUNT];  // Array to store starting Y coordinates 
 
 boolean platformsDrawn; // True if platform arrays are full
 
@@ -252,6 +253,27 @@ void draw()
           //xpos = xpos + ( (xspeed) * (xdirection) );
           ypos = ypos + ( (yspeed) * (ydirection) );
       
+      //check if the ball collides with floor/ceiling. 
+       if (ypos > height-rad -depth || ypos < rad +depth)
+       {
+          ydirection *= -1;
+          
+           // if ball goes to the hole the game ends
+      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+          {
+            gameEnded = true;
+          }  
+          
+          else
+         {//if there is  collision, send the ball the other way
+           ypos = ypos + ( (yspeed) * (ydirection) );
+         }
+      }
+            
+      
+      
+       //if (ypos > height-rad -depth || ypos < rad +depth) {
+         // ydirection *= -1;
         // Test to see if the shape exceeds the boundaries of the screen
         // If it does, reverse its direction by multiplying by -1
         if (xpos > width-rad || xpos < rad) {
@@ -267,18 +289,16 @@ void draw()
         }
         
         collisionPlatform();
-        if (ypos > height-rad -depth || ypos < rad +depth) {
-          ydirection *= -1;
-          
-       
-      }
+      //  if (ypos > height-rad -depth || ypos < rad +depth) {
+       //   ydirection *= -1;
+      //}
       
       
       // if ball goes to the hole the game ends
-      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
-          {
-            gameEnded = true;
-          }  
+      //if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+        //  {
+          //  gameEnded = true;
+          //}  
         
         
         
@@ -480,23 +500,23 @@ void keyPressed() {
 //use: for creating and drawing the platforms
 void platforms()
 {
-  boolean accepted = false;
+  //boolean accepted = false;
  
   if (!platformsDrawn)
   {  
     int counter = 0;
     
-    //new platforms are created 10 times. 
-    //However, not all of them are saved, if they are on top of each other
-    while ( counter < 10 )
+    //new platforms are created on fixed places, their size is randomized. 
+    //
+    while ( counter < AMOUNT )
     {
-      accepted = false; // true if plaforms are not on top of each other
+    //  accepted = false; // true if plaforms are not on top of each other
       placeX = 100+(counter*100); 
-      placeY = 300+(counter*20);
+      placeY = random(200, 500 );//300+(counter*20);
       placeX2 = random(placeX + 10, placeX + 55);
       placeY2 = 600;
    
-         for ( int j = 0; j < counter; ++j )
+         /*for ( int j = 0; j < counter; ++j )
          {
             accepted = true;
             
@@ -516,16 +536,16 @@ void platforms()
              accepted = false;
              break;
            }
-         }
-            
+         }*/
+            //accepted = true;
             // if the new platform is not on top of any previous platform, save it
-          if (accepted)
-           {
+          //if (accepted)
+           //{
             ArrPlaceX2[counter] = placeX2;
             ArrPlaceY2[counter] = placeY2;
             ArrPlaceX[counter] = placeX;
             ArrPlaceY[counter] = placeY;
-           }  
+           //}  
         
            counter++;
         }
@@ -554,7 +574,7 @@ void platforms()
     rect(holeG+holeLenght,boardH,boardL, -depth);
    
    //draw the platforms
-    for ( int i = 0; i < 10; ++i)
+    for ( int i = 0; i < AMOUNT; ++i)
     {
       rectMode(CORNERS);
       fill(102);
@@ -588,37 +608,30 @@ if(t == 0)
 }
 
 
-
-//Name: collisionPlatform
-//use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
+//checks that the ball does not go on top of a platform. Changes the ball's direction, when it hits a platform
 boolean collisionPlatform()
 {
   boolean collision = false;
-  for ( int i = 0; i < 10; ++i )
+  for ( int i = 0; i < AMOUNT; ++i )
   {
-    
     // test if the ball is about to go inside a platform
     if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
     {
       collision = true;
       // test if the ball arrives top of the platfrom
-      if( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
+      if ( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) && ydirection == 1 )
       {
         ydirection *= -1;
         continue;
       }
-      
-       if( xpos <= ArrPlaceX[i]  || xpos >= ArrPlaceX2[i]  )//if it arrives from the sides
+
+      if ( xpos < ArrPlaceX[i] || xpos > ArrPlaceX2[i])//if it arrives from the sides
       {
         xdirection *= -1;
       }
-      
     }
-    
   }
-
-  return collision;  
-  
+  return collision;
 }
 
 
