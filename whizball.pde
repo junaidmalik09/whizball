@@ -279,8 +279,6 @@ void draw()
         if (xpos > width-rad || xpos < rad) {
           xdirection *= -1;
         
-          
-          
         } 
     
         
@@ -289,19 +287,8 @@ void draw()
         }
         
         collisionPlatform();
-      //  if (ypos > height-rad -depth || ypos < rad +depth) {
-       //   ydirection *= -1;
-      //}
-      
-      
-      // if ball goes to the hole the game ends
-      //if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
-        //  {
-          //  gameEnded = true;
-          //}  
-        
-        
-        
+
+               
       
         // Draw the shape
         if (powermode == 0) {
