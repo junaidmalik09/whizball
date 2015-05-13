@@ -1,5 +1,24 @@
 int rad = 30;        // Width of the shape
-float xpos, ypos;    // Starting position of shape    
+float xpos, ypos;    // Starting position of shape  
+
+// Power Ups //
+
+float xpower1 = 200;
+float ypower1 = 100;
+float xpower2 = 400;
+float ypower2 = 100;
+float nxpower1 = 0;
+float nypower1 = 0;
+float nxpower2 = 0;
+float nypower2 = 0;
+float radpower = 20;
+color c1 = #daa520;
+color c2 = #ffff00;
+color c3 = #ee8262;
+int powermode=0;
+
+
+// ---------- //
 
 float xspeed = 0;  // Speed of the shape
 float yspeed = 9;  // Speed of the shape
@@ -10,11 +29,14 @@ float xacceleration = 0; // X Acceleration
 float xdirection = 1;  // Left or Right
 float ydirection = 1;  // Top to Bottom
 PImage img1;
+PImage img2;
+PImage img3;
 String userName = "";
 
 /*** Game State Boolean Variables ****/
 boolean gameStarted = false;
 boolean userNameInput = false;
+boolean firstStart = true; // determines the first starting of the game, so that the backround story is only shown once
 
 PFont font;
 String time = "";     // time as a string
@@ -27,10 +49,11 @@ float placeY2 = 0; //Ending Y coordinate for a platform
 float placeX = 0;  //Starting X coordinate for a platform
 float placeY = 0;  //Starting Y coordinate for a platform
 
-float [] ArrPlaceX2 = new float[10]; // Array to store ending X coordinates 
-float [] ArrPlaceY2 = new float[10]; // Array to store ending Y coordinates 
-float [] ArrPlaceX = new float[10];  // Array to store starting X coordinates 
-float [] ArrPlaceY = new float[10];  // Array to store starting Y coordinates 
+int AMOUNT = 7;
+float [] ArrPlaceX2 = new float[AMOUNT]; // Array to store ending X coordinates 
+float [] ArrPlaceY2 = new float[AMOUNT]; // Array to store ending Y coordinates 
+float [] ArrPlaceX = new float[AMOUNT];  // Array to store starting X coordinates 
+float [] ArrPlaceY = new float[AMOUNT];  // Array to store starting Y coordinates 
 
 boolean platformsDrawn; // True if platform arrays are full
 
@@ -46,7 +69,7 @@ int rect1=40;
 int rect2=60;
 int rposx=100;
 int rposy=100;
-
+PImage enemy;
 
 
 boolean gameEnded = false;
@@ -71,10 +94,21 @@ int points = 0;
 int game = 0;
 int line = 0;
 
+float[] nastiesX = {0,0,0,0,0,0};
+float[] nastiesY = {0,0,0,0,0,0};
+
+//shooting
+boolean shot = false;
+boolean charged = false;
+float bar = 0;
+
+float xbeam = 0;
+float ybeam = 0;
 
 void setup()   
 {
   img1 = loadImage("1.jpg");
+  enemy = loadImage("enemy.png");
   size(800, 600);
   
   size(boardL, boardH);
@@ -85,17 +119,30 @@ void setup()
   noStroke();
   ellipseMode(RADIUS);
   // Set the starting position of the shape
-  xpos = width/2;
-  ypos = height/2;
+  xpos = 50;
+  ypos = 50;
   font = createFont("Arial", 30);
+  img2 = loadImage("shield1.png");
+  
 }
 
 void draw() 
 {
   
-  if (!gameStarted ) {
-    // Show start up image
-    image(img1, 0, 0);
+  if (!gameStarted && firstStart) {
+    // Show background story
+        textSize(36);
+        //textAlign(CENTER);
+        text("BREAKOUT BALL", 300, 40);
+        textSize(28);
+        text("The ball was wrongly convicted to jail and now it wants revenge.", 35, 100);
+        text("It is now on a runaway to get out of the prison grounds.", 35, 150);
+        text("There are many prison walls and guards on the way.", 35, 200);
+        text("But the further away the ball runs the more difficult it gets...", 35, 250);
+        //text("It has to run faster and get away from more guards.", 30, 250);
+        //text("Luckily there are weapons to collect on the way to make the escape easier.", 30, 290);
+        text("Help the ball to get out!", 35, 330);
+        firstStart = false;
   }
   
   else if(gameEnded)
@@ -142,14 +189,15 @@ void draw()
 }
   else if (!gameStarted ) {
     // Show start up image
-    image(img1, 0, 0);
+    
   }
   
   else if (gameStarted && !userNameInput) {
     background(0);
+    
     // Get user input 
     textSize(36);
-    text("WHIZZBALL",300,40);
+    text("BREAKOUT BALL",300,40);
      
     
     textSize(28);
@@ -165,8 +213,9 @@ void draw()
     
           
           background(255, 255, 255);
+          
           image(bg1, xpos-(xpos*1.5), 0);
-          //image(bg2, xpos-(xpos*1.1), 340);
+          //image(enemy,0,0,30,30);
           //rect(rect1, rect2, rposx, rposy);
           
           score = frameCount;
@@ -196,6 +245,12 @@ void draw()
           text(time, width/2, height/8);
           platforms();
           
+          
+          
+          
+          
+          
+          
           if (yacceleration < 0) {
             if (yspeed > 0.1) {
               yspeed += yacceleration*0.1;    
@@ -213,6 +268,27 @@ void draw()
           //xpos = xpos + ( (xspeed) * (xdirection) );
           ypos = ypos + ( (yspeed) * (ydirection) );
       
+      //check if the ball collides with floor/ceiling. 
+       if (ypos > height-rad -depth || ypos < rad +depth)
+       {
+          ydirection *= -1;
+          
+           // if ball goes to the hole the game ends
+      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+          {
+            gameEnded = true;
+          }  
+          
+          else
+         {//if there is  collision, send the ball the other way
+           ypos = ypos + ( (yspeed) * (ydirection) );
+         }
+      }
+            
+      
+      
+       //if (ypos > height-rad -depth || ypos < rad +depth) {
+         // ydirection *= -1;
         // Test to see if the shape exceeds the boundaries of the screen
         // If it does, reverse its direction by multiplying by -1
         if (xpos > width-rad || xpos < rad) {
@@ -227,25 +303,30 @@ void draw()
           fill(255);
         }
         
-        
-        if (ypos > height-rad -depth || ypos < rad +depth) {
-          ydirection *= -1;
-          
-       
-      }
+        collisionPlatform();
+      //  if (ypos > height-rad -depth || ypos < rad +depth) {
+       //   ydirection *= -1;
+      //}
       
       
       // if ball goes to the hole the game ends
-      if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
-          {
-            gameEnded = true;
-          }  
+      //if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
+        //  {
+          //  gameEnded = true;
+          //}  
         
-        collisionPlatform();
+        
+        
       
         // Draw the shape
+        if (powermode == 0) {
+          fill(c1);
+        }
+        else if (powermode == 1) {
+          fill(c2);
+        }
         stroke(0);
-        ellipse(xpos, ypos, rad, rad);
+        ellipse(xpos, ypos, rad, rad); 
         stroke(0);
         ellipse(xpos-15, ypos-8, rad/5, rad/4);
         stroke(0);
@@ -253,7 +334,13 @@ void draw()
         stroke(0);
         ellipse(xpos, ypos+15, rad/2, rad/6);
         
-        
+        //nasties();
+        //println(xpower1);
+        //println(ypower1);
+        //println(radpower);
+        //println("==========");
+        image(img2, xpower1, ypower1);
+        image(img2, xpower2, ypower2);
         
         textSize(12);
         text(userName,40,40);
@@ -273,18 +360,129 @@ void draw()
     {
     dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
      }
+      
         
+        //fill(#ffffff);
         
-  }
-     
+        //image(img2, xpower2, ypower2);         
+        powerup();
+        powermove();  
+        nasties();
+        
+  
+  shoot();
+   // test  
+  //  rectMode(0);
+   // fill(145);
+    
+   // rect(xpos -20,ypos+40,bar,5);
+   // if( bar < 50)
+   // {
+   //   bar  = bar + 1;
+  //  }
+  //  else
+   // {
+   /*   charged =true;
+    }
 
+  if(!shot)
+  {
+    xbeam = xpos;
+    ybeam = ypos;
+ 
+  }
+  else if(shot)
+  {
+      shoot();
+   }
+ */         
+ }
+  
+}
+
+// Name: nasties()
+// Use: put random nasty images on screen
+void nasties() {
+  float prevX = 0;
+  float prevY = 0;
+  float curX = 0;
+  float curY = 0;
+  
+  for (int i=0;i<4;i++) {
+    curX = 300 + i*100;
+    curY = 100 + 1*100;
+    if (nastiesX[i] == 0) {
+      while (abs(prevX-curX) < 100) {
+        curX = random(10,700);
+      }
+     nastiesX[i] = prevX = curX; 
+    } 
+    if (nastiesY[i] == 0) {
+      while (abs(prevY-curY) < 100) {
+        curY = random(10,500);
+      }
+     nastiesY[i] = prevY = curY;
+     
+    }
+    fill(255,0,0);
+    ellipse(nastiesX[i],nastiesY[i],25,25);
+    
+    float dx = xpos - nastiesX[i];
+    float dy = ypos - nastiesY[i];
+    float distance = (float)Math.sqrt(dx * dx + dy * dy);
+    
+    
+    if (powermode == 0) {
+      if (distance < rad + 25) {
+        // collision detected!
+        println(i);
+        fill(255,0,0);
+        int time = millis();
+        while(millis() - time < 2000) {
+          println("wait");
+        }
+        
+        gameEnded = true;  
+      }
+    }
+    
+    else if (powermode == 1) {
+      if (distance < rad + 25) {
+        // collision detected!
+        println(i);
+        fill(255,0,0);
+        nastiesX[i] = -100;
+        nastiesY[i] = -100;
+        powermode = 0;  
+      }
+    }
+    
+    // shooting 
+    if(shot)
+    {
+       if(ybeam < nastiesY[i] +25 && ybeam > nastiesY[i] -25)
+       {
+         if(xbeam > nastiesX[i] +10)
+         {
+           
+          nastiesX[i] = -100;
+          nastiesY[i] = -100;
+        
+          points = points +100;
+         } 
+    } 
+    }
+    
+  }
+  
+  
+  
   
 }
 
 
-
-
 void keyPressed() {
+  boolean collision = false;
   if (!gameStarted  ) {
       gameStarted = true;
        
@@ -310,11 +508,32 @@ void keyPressed() {
         //yacceleration -= 3;
       } else if (keyCode == LEFT) {
         //xspeed -= 1;
-        xpos -= 3;
+        collision = collisionPlatform();
+        if (!collision)
+        {
+          xpos -= 10;
+        }
       } else if (keyCode == RIGHT) {
-        xpos += 3;
+        collision = collisionPlatform();
+        if (!collision)
+        {
+          xpos += 10;
+        }
       }
     }
+    
+    // test
+    else if(key=='a'){
+    
+      if(charged)
+      {
+      shot = true;
+      charged = false;
+      bar = 0;
+      
+      }
+    }
+    
   }
   
   
@@ -349,23 +568,23 @@ void keyPressed() {
 //use: for creating and drawing the platforms
 void platforms()
 {
-  boolean accepted = false;
+  //boolean accepted = false;
  
   if (!platformsDrawn)
   {  
     int counter = 0;
     
-    //new platforms are created 7 times. 
-    //However, not all of them are saved, if they are on top of each other
-    while ( counter < 10 )
+    //new platforms are created on fixed places, their size is randomized. 
+    //
+    while ( counter < AMOUNT )
     {
-      accepted = false; // true if plaforms are not on top of each other
-      placeX = random(0, 700); 
-      placeY = random(300, 550);
+    //  accepted = false; // true if plaforms are not on top of each other
+      placeX = 100+(counter*100); 
+      placeY = random(200, 500 );//300+(counter*20);
       placeX2 = random(placeX + 10, placeX + 55);
       placeY2 = 600;
    
-         for ( int j = 0; j < counter; ++j )
+         /*for ( int j = 0; j < counter; ++j )
          {
             accepted = true;
             
@@ -385,16 +604,16 @@ void platforms()
              accepted = false;
              break;
            }
-         }
-            
+         }*/
+            //accepted = true;
             // if the new platform is not on top of any previous platform, save it
-          if (accepted)
-           {
+          //if (accepted)
+           //{
             ArrPlaceX2[counter] = placeX2;
             ArrPlaceY2[counter] = placeY2;
             ArrPlaceX[counter] = placeX;
             ArrPlaceY[counter] = placeY;
-           }  
+           //}  
         
            counter++;
         }
@@ -407,9 +626,9 @@ void platforms()
     // draw the floor and the ceiling
   if(!floorDone)
     {
-     holeC = random(0,800);
+     holeC = 700;
     
-     holeG = random(0,800);
+     holeG = 600;
      floorDone = true;
     }
     rectMode(0);
@@ -423,7 +642,7 @@ void platforms()
     rect(holeG+holeLenght,boardH,boardL, -depth);
    
    //draw the platforms
-    for ( int i = 0; i < 10; ++i)
+    for ( int i = 0; i < AMOUNT; ++i)
     {
       rectMode(CORNERS);
       fill(102);
@@ -431,142 +650,7 @@ void platforms()
     }
 }
 
-//Name: platforms
-//use: for creating and drawing the platforms
-/*void platforms()
-{
-  boolean accepted = false;
-    if (!platformsDrawn)
-    {
-      int counter = 0;
-      
-      // platforms that are on the ground
-      while ( counter < 4 )
-      {
-        accepted = false; // true if plaforms are not on top of each other
-        placeX = random(0, 700);
-        placeY = random(300, 550);
-        placeX2 = random(placeX + 10, placeX + 55);
-        placeY2 = 600;
 
-          for ( int j = 0; j < counter; ++j )
-          {
-             accepted = false;
-
-            // test if new platform is on top of previous ones
-            if ( placeX2 <= ArrPlaceX[j] || placeX >= ArrPlaceX2[j] )
-            {
-              accepted = true;
-            }
-          }
-          
-          
-          if (accepted)
-          {
-            ArrPlaceX2[counter] = placeX2;
-            ArrPlaceY2[counter] = placeY2;
-            ArrPlaceX[counter] = placeX;
-            ArrPlaceY[counter] = placeY;
-           }
-    
-          counter++;
-          }
-          
-          
-     //platforms that are in the air
-     while ( counter < 7)
-      {    
-        placeX = random(50, 700);
-        placeY = random(30, 400);
-        placeX2 = random(placeX + 10, placeX + 150);
-        placeY2 = random(placeY + 10, placeY + 20);
-        
-    for ( int j = 4; j < counter; ++j )
-    {
-      accepted = false;
-        
-        // test in a new platform is on top of previous ones
-        if ( placeX2 <= ArrPlaceX[j] || placeX >= ArrPlaceX2[j] || placeY2 
-            <= ArrPlaceY[j] )
-        {
-            accepted = true;
-        }
-     }
-
-      if (accepted)
-      {
-        ArrPlaceX2[counter] = placeX2;
-        ArrPlaceY2[counter] = placeY2;
-        ArrPlaceX[counter] = placeX;
-        ArrPlaceY[counter] = placeY;
-        }
-        
-        counter++;
-      }
-
-      platformsDrawn = true;
-    }
-    
-    
-    
-    // draw the floor and the ceiling
-    if(!floorDone)
-    {
-     holeC = random(0,800);
-    
-     holeG = random(0,800);
-     floorDone = true;
-    }
-    rectMode(0);
-    fill(102);
-    //ceiling
-    rect(0,0,holeC,depth);
-    rect(holeC+holeLenght,0,800,depth);
-    
-    // floor
-    rect(0,600,holeG, -depth);
-    rect(holeG+holeLenght,600,800, -depth);
-    
-   
-    
-    
-    
-    
-    //draw the platforms
-    for ( int i = 0; i < 7; ++i)
-    {
-      rectMode(CORNERS);
-      fill(102);
-      rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
-     }
-    }*/
-
-//Name: collisionPlatform
-//use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
-
-
-/*void collisionPlatform()
-{
-  for ( int i = 0; i < 7; ++i )
-  {  
-    if ( xpos > ArrPlaceX[i] - rad && xpos < ArrPlaceX2[i] + rad && 
-        ypos - rad < ArrPlaceY2[i] && ypos + rad > ArrPlaceY[i] )
-    {
-
-    if( ypos < ArrPlaceY[i] || ypos > ArrPlaceY2[i] )// iff the ball arrives under or top of the platfrom
-
-    {
-       ydirection *= -1;
-      continue;
-    }
-
-    else//if it arrives from the sides
-    {
-      xdirection *= -1;
-      }
-    }
-  }
-}*/
 
 //Name: timer
 //use: counts dowm the time
@@ -591,111 +675,117 @@ if(t == 0)
 // text(time, width/2, height/2);
 }
 
-/*
-//Name: platforms
-//use: for creating and drawing the platforms
-void platforms()
-{
-  boolean accepted = false;
- 
-  if (!platformsDrawn)
-  {  
-    int counter = 0;
-    
-    //new platforms are created 7 times. 
-    //However, not all of them are saved, if they are on top of each other
-    while ( counter < 7 )
-    {
-      accepted = false; // true if plaforms are not on top of each other
-      placeX = random(0, 700); 
-      placeY = random(300, 550);
-      placeX2 = random(placeX + 10, placeX + 55);
-      placeY2 = 600;
-   
-         for ( int j = 0; j < counter; ++j )
-         {
-            accepted = true;
-            
-            // check if the new platform is on top of earlier one  
-           if ( placeX <= ArrPlaceX[j] && placeX2 > ArrPlaceX[j])
-           { 
-             accepted = false;
-             break;
-           }
-            if ( ArrPlaceX2[j] > placeX && placeX2 > ArrPlaceX2[j])
-           { 
-             accepted = false;
-             break;
-           }
-           if ( placeX > ArrPlaceX[j] &&  placeX2 < ArrPlaceX2[j] || placeX < ArrPlaceX[j] &&  placeX2 > ArrPlaceX2[j])
-           {
-             accepted = false;
-             break;
-           }
-         }
-            
-            // if the new platform is not on top of any previous platform, save it
-          if (accepted)
-           {
-            ArrPlaceX2[counter] = placeX2;
-            ArrPlaceY2[counter] = placeY2;
-            ArrPlaceX[counter] = placeX;
-            ArrPlaceY[counter] = placeY;
-           }  
-        
-           counter++;
-        }
-    
-    
-     platformsDrawn = true;
-    
-    } 
-   
-   //draw the platforms
-    for ( int i = 0; i < 7; ++i)
-    {
-      rectMode(CORNERS);
-      fill(102);
-      rect(ArrPlaceX[i], ArrPlaceY[i], ArrPlaceX2[i], ArrPlaceY2[i]);
-    }
-}*/
 
-//Name: collisionPlatform
-//use: tests if the ball-shape collides with any of the platforms and if it does, it changes the balls direction
-void collisionPlatform()
+//checks that the ball does not go on top of a platform. Changes the ball's direction, when it hits a platform
+boolean collisionPlatform()
 {
-  for ( int i = 0; i < 7; ++i )
+  boolean collision = false;
+  for ( int i = 0; i < AMOUNT; ++i )
   {
     // test if the ball is about to go inside a platform
     if ( xpos >= ArrPlaceX[i] - rad && xpos <= ArrPlaceX2[i] + rad &&  ypos <= ArrPlaceY2[i] && ypos >= ArrPlaceY[i] - rad )
     {
+      collision = true;
       // test if the ball arrives top of the platfrom
-      if( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) )
+      if ( ypos < ArrPlaceY[i] && ( abs(ArrPlaceY[i] - ypos) > abs(xpos - ArrPlaceX2[i]) || abs(ArrPlaceY[i] - ypos) > abs(ArrPlaceX[i] -xpos)) && ydirection == 1 )
       {
         ydirection *= -1;
         continue;
       }
-      
-       if( xpos <= ArrPlaceX[i] + rad || xpos >= ArrPlaceX2[i] - rad )//if it arrives from the sides
+
+      if ( xpos < ArrPlaceX[i] || xpos > ArrPlaceX2[i])//if it arrives from the sides
       {
         xdirection *= -1;
       }
-      
     }
-    
-  }  
-  
+  }
+  return collision;
 }
 
-/*//Name: timer
-//use: counts dowm the time
-void timer()
-{
-  t = interval-int((millis()-prestartTime)/1000);
-  time = nf(t , 2);
-  if(t == 0)
+
+void powerup()
+{  
+  
+  if((abs(xpos-xpower1)<=30) &&(abs(ypos-ypower1)<=30))
   {
-    interval+=20;
+      
+      println("collision detected");
+      print(xpos); print("--"); print(xpower1);
+      xpower1=2000;      
+      c1=c2;
+      rad=35;
+      
+      powermode=1;
+      
+      
+      
   }
-  // text(time, width/2, height/2);
-}*/
+  if((abs(xpos-xpower2) <=30)&&(abs(ypos-ypower2)<=30))
+  {
+        
+      fill(255,0,0);
+      xpower2=2000;      
+      c1=c2;
+      rad=35;          
+      powermode=1;
+          
+    
+  }
+}
+  
+  void powermove()
+{    
+  xpower1 = xpower1;
+  ypower2 = ypower2;
+    
+    
+  }
+  
+  
+  
+  
+void shoot()
+{
+  
+    rectMode(0);
+    fill(245);
+    
+    rect(xpos -20,ypos+40,bar,5);
+    if( bar < 50)
+    {
+      bar  = bar + 1;
+    }
+    else
+    {
+      charged =true;
+    }
+
+    
+    
+    if(!shot)
+    {
+      xbeam = xpos;
+      ybeam = ypos;
+ 
+    }
+    else if(shot)
+    {
+ 
+      xbeam = xbeam + 50;
+    
+      rectMode(0);
+      fill(c2);
+      rect(xbeam,ybeam,90,3); 
+ 
+    
+    
+    if(xbeam > width)
+    {
+      shot =false;
+      xbeam = xpos;
+    }
+ 
+  }
+}
+  
+
