@@ -1,5 +1,7 @@
-int rad = 30;        // Width of the shape
+int rad = 50;        // Width of the shape
 float xpos, ypos;    // Starting position of shape  
+
+float xmov; // Smoothing the transitions
 
 // Power Ups //
 
@@ -65,6 +67,8 @@ PImage bg2;
 String endText = "Congratulation You are now in Level 2";
 int score;
 PImage ball;
+PImage ball_dead;
+PImage ball_happy;
 int rect1=40;
 int rect2=60;
 int rposx=100;
@@ -74,6 +78,7 @@ PImage enemy;
 
 boolean gameEnded = false;
 boolean floorDone = false;
+boolean killed = false;
 
 // depth of the ground and ceiling
 float depth = 10;
@@ -100,6 +105,9 @@ float[] nastiesY = {0,0,0,0,0,0};
 void setup()   
 {
   img1 = loadImage("1.jpg");
+  ball = loadImage("ball_normal.png");
+  ball_dead = loadImage("ball_dead.png");
+  ball_happy = loadImage("ball_powerup.png");
   enemy = loadImage("enemy.png");
   size(800, 600);
   
@@ -113,7 +121,9 @@ void setup()
   // Set the starting position of the shape
   xpos = 50;
   ypos = 50;
-  font = createFont("Arial", 30);
+  xmov = 0;
+  font = createFont("zorque.ttf",30);
+  textFont(font, 32);
   img2 = loadImage("shield1.png");
 }
 
@@ -121,18 +131,28 @@ void draw()
 {
   
   if (!gameStarted && firstStart) {
-    // Show background story
-        textSize(36);
-        //textAlign(CENTER);
-        text("BREAKOUT BALL", 300, 40);
-        textSize(28);
-        text("The ball was wrongly convicted to jail and now it wants revenge.", 35, 100);
-        text("It is now on a runaway to get out of the prison grounds.", 35, 150);
-        text("There are many prison walls and guards on the way.", 35, 200);
-        text("But the further away the ball runs the more difficult it gets...", 35, 250);
+        background(0);
+        // Show background story
+        
+        textSize(50);
+        fill(252,237,67);
+        text("BREAKOUT BALL", 300, 60);
+        
+        image(ball,50,75,rad*3,rad*3);
+        image(ball_happy,800,75,rad*3,rad*3);
+        
+        fill(190,130,50);
+        textSize(20);
+        textAlign(CENTER);
+        String s = "The ball was wrongly convicted to jail and now it wants revenge. It is now on a runaway to get out of the prison grounds. There are many prison walls and guards on the way. But the further away the ball runs the more difficult it gets..."; 
+        text(s,250,90,500,500);
+        
         //text("It has to run faster and get away from more guards.", 30, 250);
         //text("Luckily there are weapons to collect on the way to make the escape easier.", 30, 290);
-        text("Help the ball to get out!", 35, 330);
+        fill(255,33,15);
+        textSize(45);
+        textAlign(LEFT);
+        text("Help the ball to get out!", 180, 330);
         firstStart = false;
   }
   
@@ -140,44 +160,65 @@ void draw()
   {
   
   
-   background(0,0,0);
-    // Get user input 
-    textSize(90);
-    text("GAME OVER",50,100);
-    textSize(20);
-    text("press ENTER to continue", 100, 150);
-    
-    
-    //scoreboard
-    if(game < 19)
-    {
-    players[game] = userName;
-    scoreboard[game] = points;
-    }
-    
-    textSize(25);
-    text("Scoreboard", 675, 50);
-    
-    int n=0;
-   
-    while(n <= game && n<20)
-    {
-      line=line+20;
-      textSize(20);
-      text(players[n],675,100+line);
-      text(scoreboard[n], 800,100+line);
-      n++;
+      background(0,0,0);
+      // Get user input 
+      
+      
+      if (killed) {
+        fill(255,33,15);
+        textSize(70);
+        text("THE GUARDS WON",200,70);
+        textSize(20);
+        image(ball_dead,200,100,rad*4,rad*4);
+      }
+      
+      else {
+        fill(255,33,15);
+        textSize(90);
+        text("GAME OVER",70,50);
+        textSize(20);
+        image(ball_dead,200,150,rad*4,rad*4);
+      }
+      
+      fill(190,130,50);
+      textSize(30);
+      textAlign(LEFT);
+      text("[ PRESS ENTER TO TRY AGAIN ]", 300, 370);
+      
+      //scoreboard
+      if(game < 19)
+      {
+        players[game] = userName;
+        scoreboard[game] = points;
+      }
+      
+      textSize(25);
+      text("You Scored ",475,120);
+      text(points,640,120);
+      text("points",670,120);
+      //text("Scoreboard", 475, 140);
+      
+      int n=0;
      
-    }
-    
-    
-    
-    line=0;
-    
-    
-    
-    
-}
+      while(n <= game && n<20)
+      {
+        line=line+20;
+        textSize(20);
+        text(players[n],475,140+line);
+        text(scoreboard[n], 600,140+line);
+        n++;
+       
+      }
+      
+      
+      
+      line=0;
+      
+      
+      
+      
+  }
+  // TODO: why is this here??
   else if (!gameStarted ) {
     // Show start up image
     
@@ -185,24 +226,37 @@ void draw()
   
   else if (gameStarted && !userNameInput) {
     background(0);
+    textSize(50);
+    fill(252,237,67);
+    text("BREAKOUT BALL", 300, 60);
     
     // Get user input 
-    textSize(36);
-    text("BREAKOUT BALL",300,40);
-     
+    textSize(24);
+    fill(190,130,50);
+    text("Please write your name and hit enter to get moving ! ", 160, 120);
     
-    textSize(28);
-    text("Please write your name and hit enter to start playing. ", 30, 100);
+    //rect(370,155,250,30);
+    fill(255,33,15);
     
-    
-    text(userName,300,150);
+    textAlign(CENTER);
+    fill(255,255,255);
+    text(userName,495,180);
+    textAlign(LEFT);
     fill(0,255,0);
+    
+    image(ball,420,220,rad*3,rad*3);
     
   }
   
   else if (gameStarted && userNameInput ) {
     
+          if (powermode == 1) {
+            ball = loadImage("ball_powerup.png");
+          }
           
+          else if (powermode == 0) {
+            ball = loadImage("ball_normal.png");
+          }
           background(255, 255, 255);
           
           image(bg1, xpos-(xpos*1.5), 0);
@@ -254,7 +308,7 @@ void draw()
           ypos = ypos + ( (yspeed) * (ydirection) );
       
       //check if the ball collides with floor/ceiling. 
-       if (ypos > height-rad -depth || ypos < rad +depth)
+       if (ypos > height-rad-depth || ypos < rad+depth)
        {
           ydirection *= -1;
           
@@ -272,8 +326,6 @@ void draw()
             
       
       
-       //if (ypos > height-rad -depth || ypos < rad +depth) {
-         // ydirection *= -1;
         // Test to see if the shape exceeds the boundaries of the screen
         // If it does, reverse its direction by multiplying by -1
         if (xpos > width-rad || xpos < rad) {
@@ -289,67 +341,45 @@ void draw()
         }
         
         collisionPlatform();
-      //  if (ypos > height-rad -depth || ypos < rad +depth) {
-       //   ydirection *= -1;
-      //}
       
-      
-      // if ball goes to the hole the game ends
-      //if((xpos > holeC && xpos <holeC+holeLenght && ypos < rad +depth )|| (xpos >holeG && xpos < holeG+holeLenght && ypos > height -rad -depth))
-        //  {
-          //  gameEnded = true;
-          //}  
-        
-        
-        
-      
-        // Draw the shape
-        if (powermode == 0) {
-          fill(c1);
+        if (xmov > 0) {
+          xpos+= 3;
+          xmov--;
+        } else if (xmov < 0) {
+          xpos-= 3;
+          xmov++;
         }
-        else if (powermode == 1) {
-          fill(c2);
-        }
+          
         stroke(0);
-        ellipse(xpos, ypos, rad, rad); 
-        stroke(0);
-        ellipse(xpos-15, ypos-8, rad/5, rad/4);
-        stroke(0);
-        ellipse(xpos+15, ypos-8, rad/5, rad/4);
-        stroke(0);
-        ellipse(xpos, ypos+15, rad/2, rad/6);
+        image(ball,xpos, ypos, rad, rad); 
         
-        //nasties();
-        //println(xpower1);
-        //println(ypower1);
-        //println(radpower);
-        //println("==========");
+          
+        
+        
         image(img2, xpower1, ypower1);
         image(img2, xpower2, ypower2);
         
         textSize(12);
         text(userName,40,40);
         
-        // Debug Info
+        //---  Debug Info ---//
         text("Acceleration: ",40,55);
         text(yacceleration,150,55);
-        /*text("YSpeed: ",40,70);
-        text(yspeed,150,70);
-        text("XSpeed: ",40,85);
-        text(xspeed,150,85);*/
+        text("xmov: ",40,70);
+        text(xmov,150,70);
+        // ------------- //
         
         if (ypos > boardH) {
-    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
-     }
-  if (ypos < 0) 
-    {
-    dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
-     }
+          dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+        }
+        if (ypos < 0) 
+        {
+          dY = -dY; // if dX == 2, it becomes -2; if dX is -2, it becomes 2
+        }
       
         
-        //fill(#ffffff);
         
-        //image(img2, xpower2, ypower2);         
+        
         powerup();
         powermove();  
         nasties();
@@ -385,24 +415,26 @@ void nasties() {
      
     }
     fill(255,0,0);
-    ellipse(nastiesX[i],nastiesY[i],25,25);
+    ellipse(nastiesX[i],nastiesY[i],25,25); // -(xpos*1.5) added to mimic parallax scrolling
     
-    float dx = xpos - nastiesX[i];
-    float dy = ypos - nastiesY[i];
+    float dx = xpos - nastiesX[i]; // -(xpos*1.5) added to mimic parallax scrolling
+    float dy = ypos - nastiesY[i]; 
     float distance = (float)Math.sqrt(dx * dx + dy * dy);
     
     
     if (powermode == 0) {
+      println(distance-rad);
       if (distance < rad + 25) {
         // collision detected!
         println(i);
         fill(255,0,0);
         int time = millis();
-        while(millis() - time < 2000) {
-          println("wait");
-        }
+        /*while(millis() - time < 2000) {
+          print("wait");
+        }*/
         
-        gameEnded = true;  
+        gameEnded = true;
+        killed = true;  
       }
     }
     
@@ -435,14 +467,19 @@ void keyPressed() {
   
   else if (!userNameInput  ) {
      // Keep on taking user input until enter is pressed
-     if (key != '\n') {
-       userName = userName + key;
+     if (userName.length() < 25 && key!= CODED && key != BACKSPACE && key != '\n'){
+        userName += key;
+     }
+     else if(key == BACKSPACE && userName.length() > 0){
+        userName = userName.substring (0,userName.length()-1);
+     }
+     
+     else if (key == '\n') {
+       userNameInput = true;
        prestartTime = millis();
      }
      
-     else {
-       userNameInput = true;
-     }
+     
   }
   
   else if (gameStarted && userNameInput) {
@@ -456,13 +493,13 @@ void keyPressed() {
         collision = collisionPlatform();
         if (!collision)
         {
-          xpos -= 10;
+          if (xmov > -100) { xmov -= 10; }
         }
       } else if (keyCode == RIGHT) {
         collision = collisionPlatform();
         if (!collision)
         {
-          xpos += 10;
+          if (xmov < 100) { xmov += 10; }
         }
       }
     }
@@ -473,24 +510,7 @@ void keyPressed() {
   {
     if (key == '\n') {
       
-      userName = "";
-      xpos = width/2;
-      ypos = height/2;
-      xspeed = 0;
-      yspeed = 3;
-      yacceleration = 0;
-      xacceleration = 0;
-      
-      time = "";
-      interval = 20;
-      t = interval;
-      prestartTime = 0;
-      
-      gameEnded = false; 
-      gameStarted= false;
-      userNameInput =false;
-      game++;
-      points=0;
+      reset();
    
     }
   }
@@ -508,7 +528,7 @@ void platforms()
     
     //new platforms are created on fixed places, their size is randomized. 
     //
-    while ( counter < AMOUNT )
+    while ( counter > AMOUNT )
     {
     //  accepted = false; // true if plaforms are not on top of each other
       placeX = 100+(counter*100); 
@@ -645,8 +665,7 @@ void powerup()
       print(xpos); print("--"); print(xpower1);
       xpower1=2000;      
       c1=c2;
-      rad=35;
-      
+      //rad=35;
       powermode=1;
       
       
@@ -658,7 +677,7 @@ void powerup()
       fill(255,0,0);
       xpower2=2000;      
       c1=c2;
-      rad=35;          
+      //rad=35;          
       powermode=1;
           
     
@@ -671,4 +690,24 @@ void powerup()
   ypower2 = ypower2;
     
     
+  }
+  
+  // Function : reset()
+  // Reset the game parameters after the game is finished
+  void reset() {
+    userName = "";
+    xpos = 50;
+    ypos = 50;
+    ydirection = 1;
+    xmov = 0;
+    time = "";
+    interval = 20;
+    t = interval;
+    prestartTime = 0;
+    gameEnded = false;
+    gameStarted= true;
+    userNameInput =false;
+    game++;
+    points=0;
+     
   }
