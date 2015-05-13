@@ -95,7 +95,11 @@ String [] players = new String[20];
 int [] scoreboard = new int[20];
 
 
-int points = 0;
+
+boolean lostLife= false;
+int lives = 2;
+int points = 0;//points shown on the screen during the game, and used for incrementing lives
+int totalpoints = 0; //total points
 int game = 0;
 int line = 0;
 
@@ -189,7 +193,7 @@ void draw()
       if(game < 19)
       {
         players[game] = userName;
-        scoreboard[game] = points;
+        scoreboard[game] = totalpoints;;
       }
       
       textSize(25);
@@ -211,7 +215,7 @@ void draw()
       }
       
       
-      
+      points = 0;
       line=0;
       
       
@@ -288,6 +292,9 @@ void draw()
           timer();
           textSize(35);
           text(time, width/2, height/8);
+          textSize(20);  
+          text(userName + " points: " + totalpoints, 40, 50);
+          text("lives " + lives, 40, 70 );
           platforms();
           
           if (yacceleration < 0) {
@@ -384,6 +391,18 @@ void draw()
         powermove();  
         nasties();
         
+        if (points >= 15)
+        {
+           lives += 1;
+           points = 0; 
+        }
+
+        
+        if (lives < 1)
+        {
+          gameEnded = true;
+        }
+        
   }
      
 
@@ -423,18 +442,24 @@ void nasties() {
     
     
     if (powermode == 0) {
-      println(distance-rad);
+      //println(distance-rad);
       if (distance < rad + 25) {
         // collision detected!
-        println(i);
         fill(255,0,0);
         int time = millis();
-        /*while(millis() - time < 2000) {
-          print("wait");
-        }*/
         
-        gameEnded = true;
-        killed = true;  
+        
+        //gameEnded = true;
+        killed = true;
+        if (lives >= 1)
+        {
+          lives -= 1;
+          powermode = 1;
+        }
+        else
+        {
+          gameEnded = true;
+        }    
       }
     }
     
@@ -445,7 +470,10 @@ void nasties() {
         fill(255,0,0);
         nastiesX[i] = -100;
         nastiesY[i] = -100;
-        powermode = 0;  
+        powermode = 0;
+        //defeated a guard, more points
+        points += 5;    
+        totalpoints += 5;   
       }
     }
 
@@ -667,6 +695,9 @@ void powerup()
       c1=c2;
       //rad=35;
       powermode=1;
+      //the ball hit the powerup, more points
+      points += 5;      
+      totalpoints += 5; 
       
       
       
@@ -679,6 +710,9 @@ void powerup()
       c1=c2;
       //rad=35;          
       powermode=1;
+      //the ball hit the powerup, more points
+      points += 5;      
+      totalpoints += 5;
           
     
   }
@@ -708,6 +742,7 @@ void powerup()
     gameStarted= true;
     userNameInput =false;
     game++;
+    totalpoints=0;
     points=0;
      
   }
