@@ -106,6 +106,14 @@ int line = 0;
 float[] nastiesX = {0,0,0,0,0,0};
 float[] nastiesY = {0,0,0,0,0,0};
 
+boolean shot = false;
+boolean charged = false;
+float bar = 0;
+float xbeam = 0;
+float ybeam = 0;
+
+
+
 void setup()   
 {
   img1 = loadImage("1.jpg");
@@ -390,6 +398,7 @@ void draw()
         powerup();
         powermove();  
         nasties();
+        shoot();
         
         if (points >= 15)
         {
@@ -476,6 +485,21 @@ void nasties() {
         totalpoints += 5;   
       }
     }
+    
+    if(shot)
+    {
+       if(ybeam < nastiesY[i] +25 && ybeam > nastiesY[i] -25)
+       {
+         if(xbeam > nastiesX[i] +10)
+         {
+           
+          nastiesX[i] = -100;
+          nastiesY[i] = -100;
+          points += 100;
+          totalpoints += 100;
+         } 
+       } 
+    }
 
     
   }
@@ -531,7 +555,19 @@ void keyPressed() {
         }
       }
     }
+    
+    // Shooting : jarkko
+    else if(key==' '){
+        if(charged)
+        {
+          shot = true;
+          charged = false;
+          bar = 0;
+        }
+     }
+    
   }
+  
   
   
    if( gameEnded )
@@ -746,3 +782,50 @@ void powerup()
     points=0;
      
   }
+  
+  // Function: shoot()
+  // Shoot the laser and stuff...
+  void shoot()
+  {
+    
+      rectMode(0);
+      fill(245);
+      
+      rect(xpos -20,ypos+40,bar,5);
+      if( bar < 50)
+      {
+        bar  = bar + 1;
+      }
+      else
+      {
+        charged =true;
+      }
+  
+      
+      
+      if(!shot)
+      {
+        xbeam = xpos;
+        ybeam = ypos;
+   
+      }
+      else if(shot)
+      {
+   
+        xbeam = xbeam + 50;
+      
+        rectMode(0);
+        //fill(c2);
+        rect(xbeam,ybeam,90,3); 
+   
+      
+      
+      if(xbeam > width)
+      {
+        shot =false;
+        xbeam = xpos;
+      }
+   
+    }
+  }
+  
